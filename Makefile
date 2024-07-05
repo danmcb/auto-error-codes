@@ -12,7 +12,7 @@ OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJECTS)
 	g++ $(OBJECTS) -Wall $(LIBS) -o $@
