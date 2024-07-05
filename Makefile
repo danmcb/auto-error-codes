@@ -1,7 +1,7 @@
 TARGET = myapp
 LIBS = -lm
 CC=gcc
-CFLAGS= -g -Wall
+
 
 .PHONY: default all clean
 
@@ -11,10 +11,15 @@ all: default
 OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 HEADERS = $(wildcard *.h)
 
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+#$(GIT_REF_SHORT):
+GIT_REF_SHORT = $(shell git rev-parse HEAD|cut -c 1-8)
 
-$(TARGET): $(OBJECTS)
+CFLAGS= -g -Wall
+
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -D'GIT_REF_SHORT=0x$(GIT_REF_SHORT)' -c $< -o $@
+
+$(TARGET): $(OBJECTS) 
 	g++ $(OBJECTS) -Wall $(LIBS) -o $@
 
 clean:
