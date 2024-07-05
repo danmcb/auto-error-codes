@@ -14,5 +14,4 @@
         exit(-1); \
     }
 
-
 #define ASSERT_ALWAYS ASSERT(0)
