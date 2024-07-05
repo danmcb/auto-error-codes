@@ -1,4 +1,3 @@
 2 src files found
 1	main.c
 2	pathto/some_lib/bad_file.c
-longest file main.c has 14 lines

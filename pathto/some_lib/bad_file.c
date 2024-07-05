@@ -5,6 +5,6 @@
 
 void bad_func(void)
 {
-    printf("your bad code is right here\n");
+    printf("your bad code is here at source id %d, after line %d\n", SOURCE_ID, __LINE__);
     ASSERT_ALWAYS;
 }

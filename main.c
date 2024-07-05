@@ -10,5 +10,6 @@
 int main(void)
 {
   printf("git ref is 0x%x ok!\n", GIT_REF_SHORT);  
+  printf("src id of %s is %d\n", __FILE__, SOURCE_ID);
   bad_func();
 }

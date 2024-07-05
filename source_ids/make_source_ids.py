@@ -44,7 +44,7 @@ def main():
             exit(-1)
         file_code += 1
         output.append("{}\t{}".format(file_code, p))
-    output.append("longest file {} has {} lines".format(longest_file, longest_length))
+    # output.append("longest file {} has {} lines".format(longest_file, longest_length))
 
     print( "\n".join(output) )
 
