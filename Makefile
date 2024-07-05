@@ -12,23 +12,24 @@ MAX_LINES = 1024
 default: $(TARGET)
 all: default
 
-OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
-OBJECTS += $(patsubst %.c, %.o, $(wildcard $(SOME_LIB_PATH)/*.c))
+
+SRCS = *.c $(SOME_LIB_PATH)/*.c
+OBJECTS = $(patsubst %.c, %.o, $(wildcard $(SRCS)))
 HEADERS = $(wildcard *.h)
 
-SOURCE_ID_SCRIPT = ./source_ids/make_source_ids.py
+SOURCE_IDS_DIR = ./source_ids
+SOURCE_ID_SCRIPT = $(SOURCE_IDS_DIR)/make_source_ids.py
+SOURCE_IDS_LIST = $(SOURCE_IDS_DIR)/source_ids.txt
 
-SOURCE_IDS = ./source_ids.txt
-
-$(SOURCE_IDS): $(SOURCE_ID_SCRIPT)
-	$(info Generating source ids into $(SOURCE_IDS))
-	$(SOURCE_ID_SCRIPT) --root . --max_files $(MAX_FILES) --max_lines $(MAX_LINES) > $(SOURCE_IDS)
+$(SOURCE_IDS_LIST): $(SOURCE_ID_SCRIPT)
+	$(info Generating source ids into $(SOURCE_IDS_LIST))
+	$(SOURCE_ID_SCRIPT) --root . --max_files $(MAX_FILES) --max_lines $(MAX_LINES) > $(SOURCE_IDS_LIST)
 
 GIT_REF_SHORT = $(shell git rev-parse HEAD|cut -c 1-8)
 
 CFLAGS= -g -Wall -D'GIT_REF_SHORT=0x$(GIT_REF_SHORT)'
 
-%.o: %.c $(HEADERS) $(SOURCE_IDS)
+%.o: %.c $(HEADERS) $(SOURCE_IDS_LIST)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJECTS) 
@@ -37,4 +38,4 @@ $(TARGET): $(OBJECTS)
 clean:
 	-rm -f *.o 
 	-rm -f $(TARGET)
-	-rm -f $(SOURCE_IDS)
+	-rm -f $(SOURCE_IDS_LIST)
