@@ -1,35 +1,36 @@
 # auto-error-codes
-No more maintaining lists of error codes : compress build/file/line to a 32 bit int and use it in your asserts and error handlers. Especially useful for embedded systems development.
+No more maintaining lists of error codes. This library:
+
+1. creates a 32 bit integer which identifies your file and line number as a 32 bit int called ERROR_CODE.
+2. has a trivial demo project with a sample ASSERT implementation which uses ERROR_CODE.
+3. makes the first 32 bits of the git reference available to the source code.
+4. suggests ways to use these feature in your project to simplify your error handling.
 
 ## Assert Assert Assert!
 
-No serious embedded project should be without proper error handling, a.k.a. ASSERT handlers. A good ASSERT handler should do the following:
+No serious embedded project should be without proper error handling, a.k.a. ASSERT handlers. A good ASSERT handler should do something like the following:
 
-1. try to store a persistent record of the location/cause of the problem to non-volatile storage (typically on-board FLASH)
-2. put the system into a known safe state, and (possibly) signal the issue t the user (flashing red lights or similar).
-3. attempt to safely recover from the error (what this really means is system-specific but let's assume a reboot).
+1. In development : show the dev that an error has occurred and where (file and line number). (Typically debug/error print.)
+2. Development and production : store the error location to non-volatile storage (typically on-board FLASH).
+3. Put the system into a known safe state, and (possibly) signal the issue to the dev/user (flashing red lights or similar).
+4. Try to safely recover from the error (perhaps a reboot).
 
-A dedicated area should exist in storage where records of failures is kept and this should be checked and (if necessary) reported on boot.
+The exact implementation of these steps depends heavily on the application and risks/consequences of failure, but error handling is ALWAYS a primary part of system design and can never be ignored.
 
-Implementation of such handlers, with appropriate behaviour for both production and development environments, should be amongst the earliest functions implemented in any project. This encourages programmers to use ASSERT liberally *(A Very Good Thing)* and can be a serious aid in finding more bugs sooner.
+A scheme which works well on many modern microcontrollers is to have a dedicated area of FLASH where failure records are kept, which is checked and reported on boot. Because FLASH is a slow write device and the system could be in an unstable state on faolire, it is good if the stored error code is small.
 
-### Manually Maintained Error Codes
+This small library allows the location of an error (the FILE and LINE NUMBER) to be stored as a single 32 bit integer. This is done using a script to create integer SOURCE IDS for all sources in the project, and a simple pre-processor macro. It also makes the first 32 bits of the git reference available as a processor define, which should also be stored in FLASH when the sustem is forst programmed.
 
-Many systems maintain a file called something like `error_codes.h` which contains a long list of codes which must be maintained manually by the programmer. However this is **not** a great way of doing things, for several reasons:
+Modifications to the Makefile are needed to support this mechanism. A sample Makefile and simple demo project are provided.
 
-- it is prone to human error (for instance codes should be unique but sometimes are not).
+### Manually defining error codes is not your friend
+
+Many systems maintain a file called something like `ErrorCodes.h` which must be maintained manually by the programmer. However this is **not** a great way of doing things, for several reasons:
+
+- it is prone to human error (for instance codes should be unique but often they are not).
 - having to maintain the list manually is a pain, and discourages the liberal use of ASSERT.
 
-### Auto Error Codes
-
-This small library contains a simple solution to this which can be integrated fairly easily into most build environments. It consists of:
-
-- a python script which finds source files in the repository and creates a single file which assigns an integer ID to each
-- a file asserts.h which contains sample macros to generate a unique 32 bit code which allows any line in any file to be uniquely identified
-- another python script which decodes the 32 bit code back to a file and linenumber.
-- some sample Makefile fragments to assist in integration with your build project.
-
-## How It Works
+## How This Library Works
 
 1. python script *make_source_ids.py* finds all source files in your project, relative to the root of your project, While doing so it checks:
    1. that there are not too many source files 

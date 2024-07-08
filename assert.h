@@ -14,6 +14,10 @@
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+// this macro should be re-written for yur system to :
+// 1. store ERROR_CODE in FLASH if possible
+// 2. notify the dev or user in a suitable way
+// 3. make the system safe (up to you to decide what that means)
 #define ASSERT(condition)  \
     if (!(condition)) { \
         printf("ASSERT at %s:%d - ERROR_CODE is 0x%08x\n", __FILENAME__, __LINE__, ERROR_CODE ); \
